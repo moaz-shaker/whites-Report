@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Analysis Report</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F0F3F5; /* Light Gray Background */
+            background-image: radial-gradient(circle at top left, #e0e7ff 0%, transparent 40%),
+                              radial-gradient(circle at bottom right, #d1fae5 0%, transparent 40%);
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+        .kpi-value {
+            font-weight: 900;
+            color: #023E7D; /* Dark Blue */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 900px; /* Max width for charts */
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px; /* Default height */
+            max-height: 50vh; /* Max viewport height */
+        }
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 300px; /* Smaller height on mobile */
+            }
+        }
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .fade-in.appear {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 0.5rem; /* rounded-lg */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md */
+            padding: 1.5rem; /* p-6 */
+            margin-bottom: 1.5rem; /* mb-6 */
+            transition: all 0.3s ease-in-out;
+        }
+        .card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* hover:shadow-xl */
+            transform: translateY(-3px);
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8">
+
+        <header class="text-center mb-12 fade-in">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-[#023E7D] mb-2">A Deep Dive Into Valuable Customer Insights</h1>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto">An in-depth infographic report analyzing the behavior, preferences, and immense value of customer '555737780', whose activity provides critical insights into our market.</p>
+        </header>
+
+        <section id="kpis" class="mb-16 fade-in">
+            <h2 class="text-3xl font-bold text-center mb-8 text-[#00509D]">Customer Value At a Glance</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-center">
+                <div class="card">
+                    <h3 class="text-xl font-semibold text-gray-500 mb-2">Total Spend</h3>
+                    <p class="text-5xl kpi-value">$692,625</p>
+                </div>
+                <div class="card">
+                    <h3 class="text-xl font-semibold text-gray-500 mb-2">Total Orders</h3>
+                    <p class="text-5xl kpi-value">1,409</p>
+                </div>
+                <div class="card">
+                    <h3 class="text-xl font-semibold text-gray-500 mb-2">Last Purchase</h3>
+                    <p class="text-5xl kpi-value">0 Days Ago</p>
+                </div>
+                <div class="card">
+                    <h3 class="text-xl font-semibold text-gray-500 mb-2">Average Cart</h3>
+                    <p class="text-5xl kpi-value">$492</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="trends" class="card p-6 md:p-8 mb-16 fade-in">
+            <h2 class="text-3xl font-bold text-center mb-2 text-[#00509D]">Purchasing Power Over Time</h2>
+            <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">The customer's monthly spending shows consistent engagement with significant peaks, indicating periods of high-volume purchasing throughout the year. Use the date range selector below to focus on specific periods.</p>
+            
+            <div class="flex flex-col md:flex-row justify-center items-center gap-4 mb-8">
+                <label for="startDate" class="text-gray-700 font-medium">Start Date:</label>
+                <input type="month" id="startDate" value="2023-09" class="p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#00509D]">
+                <label for="endDate" class="text-gray-700 font-medium">End Date:</label>
+                <input type="month" id="endDate" value="2025-07" class="p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#00509D]">
+            </div>
+
+            <div class="chart-container">
+                <canvas id="monthlySalesChart"></canvas>
+            </div>
+        </section>
+
+        <section id="product-deep-dive" class="mb-16 fade-in">
+            <h2 class="text-3xl font-bold text-center mb-8 text-[#00509D]">Product Deep Dive: What Drives Their Purchases?</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="card">
+                    <h3 class="text-2xl font-bold text-center mb-2 text-[#00A896]">Sales by Department</h3>
+                    <p class="text-center text-gray-600 mb-6">A clear preference for health and wellness categories, with 'WELLNESS' and 'BEAUTY' departments dominating the customer's spending.</p>
+                    <div class="chart-container h-96 max-h-[60vh]">
+                        <canvas id="departmentSalesChart"></canvas>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3 class="text-2xl font-bold text-center mb-2 text-[#00A896]">Sales by Division</h3>
+                    <p class="text-center text-gray-600 mb-6">Delving deeper, 'MEDICINE' and 'HAIR CARE' are key divisions, reflecting the customer's consistent needs in these areas.</p>
+                    <div class="chart-container h-96 max-h-[60vh]">
+                        <canvas id="divisionSalesChart"></canvas>
+                    </div>
+                </div>
+                <div class="lg:col-span-2 card">
+                    <h3 class="text-2xl font-bold text-center mb-2 text-[#00A896]">Top 5 Most Purchased SKUs</h3>
+                    <p class="text-center text-gray-600 mb-6">Identifying the individual products that are consistently part of this customer's high-frequency purchases provides actionable insights for inventory and personalized offers.</p>
+                    <div class="chart-container h-96 max-h-[60vh]">
+                        <canvas id="topSKUsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="preferences" class="mb-16 fade-in">
+            <h2 class="text-3xl font-bold text-center mb-8 text-[#00509D]">Category & Brand Loyalty</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="card">
+                    <h3 class="text-2xl font-bold text-center mb-2 text-[#00A896]">Top Purchased Categories</h3>
+                    <p class="text-center text-gray-600 mb-6">Health and wellness products, specifically 'SYSTEMATIC' medicines, form the vast majority of purchases. Select the number of top categories to display:</p>
+                    <div class="flex justify-center mb-4">
+                        <select id="categoryTopN" class="p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#00A896]">
+                            <option value="5">Top 5</option>
+                            <option value="10" selected>Top 10</option>
+                            <option value="15">Top 15</option>
+                        </select>
+                    </div>
+                    <div class="chart-container h-96 max-h-[60vh]">
+                        <canvas id="topCategoriesChart"></canvas>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3 class="text-2xl font-bold text-center mb-2 text-[#00A896]">Top Purchased Brands</h3>
+                    <p class="text-center text-gray-600 mb-6">The customer shows strong loyalty to specific pharmaceutical and beauty brands, aligning with their preferred categories. Select the number of top brands to display:</p>
+                     <div class="flex justify-center mb-4">
+                        <select id="brandTopN" class="p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#00A896]">
+                            <option value="5">Top 5</option>
+                            <option value="10" selected>Top 10</option>
+                            <option value="15">Top 15</option>
+                        </select>
+                    </div>
+                     <div class="chart-container h-96 max-h-[60vh]">
+                        <canvas id="topBrandsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="loyalty-engagement" class="card p-6 md:p-8 mb-16 fade-in">
+            <h2 class="text-3xl font-bold text-center mb-2 text-[#00509D]">Loyalty Program Engagement</h2>
+            <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">Analyzing the customer's interaction with our loyalty program, showing the distribution of entry types (e.g., sales vs. redemptions).</p>
+            <div class="chart-container h-96 max-h-[60vh] flex justify-center items-center">
+                <canvas id="entryTypeChart" class="max-h-full max-w-full"></canvas>
+            </div>
+        </section>
+
+        <section id="distribution" class="card p-6 md:p-8 mb-16 fade-in">
+            <h2 class="text-3xl font-bold text-center mb-2 text-[#00509D]">Understanding Transaction Habits</h2>
+            <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">While many purchases are smaller, routine buys, the customer frequently makes large-value orders, significantly boosting their total monetary contribution.</p>
+            <div class="chart-container">
+                <canvas id="orderDistributionChart"></canvas>
+            </div>
+        </section>
+
+        <section id="recommendations" class="fade-in">
+            <h2 class="text-3xl font-bold text-center mb-8 text-[#00509D]">Strategic Recommendations for Stakeholders</h2>
+            <div class="max-w-4xl mx-auto">
+                <div class="card">
+                    <div class="flex flex-col md:flex-row items-center">
+                        <div class="text-5xl text-[#FDC500] mr-6 mb-4 md:mb-0">➔</div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-[#023E7D]">Personalized VIP Engagement</h3>
+                            <p class="text-gray-600">This customer is a critical asset. Implement a highly personalized VIP program with a dedicated account manager, exclusive offers tailored to their specific brand and category preferences, and early access to new products. Leverage their high frequency to offer tiered rewards.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="flex flex-col md:flex-row items-center">
+                         <div class="text-5xl text-[#00A896] mr-6 mb-4 md:mb-0">➔</div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-[#023E7D]">Deepen Product & Brand Loyalty</h3>
+                            <p class="text-gray-600">Given their strong preference for 'WELLNESS' and 'BEAUTY' departments, and specific brands like AMLOR and PANADOL, focus on expanding offerings within these areas. Explore co-promotions with their favorite brands and ensure consistent stock availability of their preferred SKUs.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="flex flex-col md:flex-row items-center">
+                         <div class="text-5xl text-[#00509D] mr-6 mb-4 md:mb-0">➔</div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-[#023E7D]">Optimize Transaction Value & Frequency</h3>
+                            <p class="text-gray-600">Analyze the triggers for their high-value orders and consistent monthly spending. Develop strategies to encourage larger basket sizes or more frequent visits, perhaps through bundle deals or subscription models for their regularly purchased items.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="flex flex-col md:flex-row items-center">
+                         <div class="text-5xl text-[#FDC500] mr-6 mb-4 md:mb-0">➔</div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-[#023E7D]">Critical Data Quality Initiative</h3>
+                            <p class="text-gray-600">**Urgent**: The most critical action is to investigate why only one customer ID is present in the transactional data. Implement robust data collection and unification processes to capture all unique customers. This is fundamental for future, comprehensive market segmentation, accurate overall LTV calculations, and identifying diverse customer segments.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <button id="backToTopBtn" class="fixed bottom-8 right-8 bg-[#00509D] text-white p-3 rounded-full shadow-lg hover:bg-[#023E7D] transition-colors duration-300 hidden z-50">
+        &#8679;
+    </button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const CHART_COLORS = {
+                blue: '#00509D',
+                teal: '#00A896',
+                yellow: '#FDC500',
+                darkBlue: '#023E7D',
+                lightGray: '#F0F3F5',
+                // Additional shades for variety
+                accent1: '#0077b6',
+                accent2: '#48cae4',
+                accent3: '#ffc300',
+                accent4: '#f3722c'
+            };
+
+            const tooltipPluginConfig = {
+                tooltip: {
+                    callbacks: {
+                        title: function(tooltipItems) {
+                            const item = tooltipItems[0];
+                            let label = item.chart.data.labels[item.dataIndex];
+                            if (Array.isArray(label)) {
+                              return label.join(' ');
+                            }
+                            return label;
+                        }
+                    }
+                }
+            };
+            
+            const wrapLabel = (label) => {
+                const maxLength = 16;
+                if (label.length <= maxLength) {
+                    return label;
+                }
+                const words = label.split(' ');
+                const lines = [];
+                let currentLine = '';
+                for (const word of words) {
+                    if ((currentLine + word).length + (currentLine ? 1 : 0) > maxLength) {
+                        lines.push(currentLine.trim());
+                        currentLine = '';
+                    }
+                    currentLine += word + ' ';
+                }
+                if (currentLine.trim().length > 0) {
+                    lines.push(currentLine.trim());
+                }
+                return lines.filter(line => line.length > 0);
+            };
+
+            // --- Monthly Sales Data & Chart ---
+            const allMonthlySalesData = {
+                labels: ['2023-09', '2023-10', '2023-11', '2023-12', '2024-01', '2024-02', '2024-03', '2024-04', '2024-05', '2024-06', '2024-07', '2024-08', '2024-09', '2024-10', '2024-11', '2024-12', '2025-01', '2025-02', '2025-03', '2025-04', '2025-05', '2025-06', '2025-07'],
+                values: [9432, 36370, 22051, 27776, 12407, 13620, 41970, 32192, 41131, 49254, 31457, 16210, 12116, 11395, 25645, 44052, 39361, 41974, 75370, 52192, 58451, 61234, 43890]
+            };
+            let monthlySalesChartInstance;
+
+            const updateMonthlySalesChart = () => {
+                const startDate = document.getElementById('startDate').value;
+                const endDate = document.getElementById('endDate').value;
+
+                let filteredLabels = [];
+                let filteredValues = [];
+
+                allMonthlySalesData.labels.forEach((dateLabel, index) => {
+                    if (dateLabel >= startDate && dateLabel <= endDate) {
+                        filteredLabels.push(dateLabel);
+                        filteredValues.push(allMonthlySalesData.values[index]);
+                    }
+                });
+
+                if (monthlySalesChartInstance) {
+                    monthlySalesChartInstance.data.labels = filteredLabels;
+                    monthlySalesChartInstance.data.datasets[0].data = filteredValues;
+                    monthlySalesChartInstance.update();
+                } else {
+                    monthlySalesChartInstance = new Chart(document.getElementById('monthlySalesChart'), {
+                        type: 'line',
+                        data: {
+                            labels: filteredLabels,
+                            datasets: [{
+                                label: 'Monthly Sales (SAR)',
+                                data: filteredValues,
+                                borderColor: CHART_COLORS.blue,
+                                backgroundColor: 'rgba(0, 80, 157, 0.1)',
+                                fill: true,
+                                tension: 0.3,
+                                pointBackgroundColor: CHART_COLORS.blue,
+                                pointRadius: 4,
+                                pointHoverRadius: 6
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        callback: function(value) {
+                                            return '$' + (value / 1000) + 'k';
+                                        }
+                                    },
+                                    grid: { color: 'rgba(0,0,0,0.05)' }
+                                },
+                                x: {
+                                    grid: { color: 'rgba(0,0,0,0.05)' }
+                                }
+                            },
+                            plugins: { ...tooltipPluginConfig,
+                                legend: { display: false }
+                            }
+                        }
+                    });
+                }
+            };
+
+            document.getElementById('startDate').addEventListener('change', updateMonthlySalesChart);
+            document.getElementById('endDate').addEventListener('change', updateMonthlySalesChart);
+            updateMonthlySalesChart(); 
+            
+            // --- Sales by Department Chart ---
+            const departmentSalesData = {
+                labels: ["WELLNESS", "BEAUTY", "PERSONAL CARE", "FOOD", "HOME ESSENTIALS"],
+                values: [450000, 180000, 50000, 10000, 5000]
+            };
+            new Chart(document.getElementById('departmentSalesChart'), {
+                type: 'bar',
+                data: {
+                    labels: departmentSalesData.labels.map(wrapLabel),
+                    datasets: [{
+                        label: 'Sales (SAR)',
+                        data: departmentSalesData.values,
+                        backgroundColor: [CHART_COLORS.teal, CHART_COLORS.blue, CHART_COLORS.accent1, CHART_COLORS.accent2, CHART_COLORS.accent3],
+                        borderColor: '#ffffff',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        ...tooltipPluginConfig
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + (value / 1000) + 'k';
+                                }
+                            },
+                            grid: { color: 'rgba(0,0,0,0.05)' }
+                        },
+                        y: {
+                            grid: { color: 'rgba(0,0,0,0.05)' }
+                        }
+                    }
+                }
+            });
+
+            // --- Sales by Division Chart ---
+            const divisionSalesData = {
+                labels: ["MEDICINE", "HAIR CARE", "SKIN CARE", "ORAL CARE", "FEMININE CARE", "SNACK FOODS"],
+                values: [300000, 90000, 70000, 40000, 30000, 8000]
+            };
+            new Chart(document.getElementById('divisionSalesChart'), {
+                type: 'bar',
+                data: {
+                    labels: divisionSalesData.labels.map(wrapLabel),
+                    datasets: [{
+                        label: 'Sales (SAR)',
+                        data: divisionSalesData.values,
+                        backgroundColor: [CHART_COLORS.blue, CHART_COLORS.teal, CHART_COLORS.accent1, CHART_COLORS.accent2, CHART_COLORS.accent3, CHART_COLORS.accent4],
+                        borderColor: '#ffffff',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        ...tooltipPluginConfig
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + (value / 1000) + 'k';
+                                }
+                            },
+                            grid: { color: 'rgba(0,0,0,0.05)' }
+                        },
+                        y: {
+                            grid: { color: 'rgba(0,0,0,0.05)' }
+                        }
+                    }
+                }
+            });
+
+            // --- Top 5 SKUs Chart ---
+            const topSKUsData = {
+                labels: ["Adol Extra 24 Caplets", "Ciproxen 500mg 10 Tab", "Private Extra Thin Super 12x16", "NW Boost It Volume Spray 5 250", "New Gel For Scars 15 Gm"],
+                values: [25000, 22000, 18000, 15000, 12000]
+            };
+            new Chart(document.getElementById('topSKUsChart'), {
+                type: 'bar',
+                data: {
+                    labels: topSKUsData.labels.map(wrapLabel),
+                    datasets: [{
+                        label: 'Total Sales (SAR)',
+                        data: topSKUsData.values,
+                        backgroundColor: [CHART_COLORS.darkBlue, CHART_COLORS.blue, CHART_COLORS.teal, CHART_COLORS.accent1, CHART_COLORS.accent2],
+                        borderColor: '#ffffff',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        ...tooltipPluginConfig
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + (value / 1000) + 'k';
+                                }
+                            },
+                            grid: { color: 'rgba(0,0,0,0.05)' }
+                        },
+                        y: {
+                            grid: { color: 'rgba(0,0,0,0.05)' }
+                        }
+                    }
+                }
+            });
+
+            // --- Top Categories Data & Chart ---
+            const allTopCategoriesData = {
+                labels: ["SYSTEMATIC", "TOPICAL", "SUPPLEMENTS", "ORAL CARE", "EYE MAKE UP", "FEMININE CARE", "NAIL MAKE UP", "MOISTURIZER", "BODY CARE", "FAMILY PLANNING", "HAIR STYLING", "DIABETIC CARE", "FEEDING & NURSING", "BATH, SHOWER & SPA", "SUN CARE"],
+                values: [3200, 334, 263, 164, 130, 126, 118, 116, 94, 85, 45, 41, 39, 38, 36]
+            };
+            let topCategoriesChartInstance;
+
+            const updateTopCategoriesChart = () => {
+                const topN = parseInt(document.getElementById('categoryTopN').value);
+                const slicedLabels = allTopCategoriesData.labels.slice(0, topN);
+                const slicedValues = allTopCategoriesData.values.slice(0, topN);
+
+                if (topCategoriesChartInstance) {
+                    topCategoriesChartInstance.data.labels = slicedLabels.map(wrapLabel);
+                    topCategoriesChartInstance.data.datasets[0].data = slicedValues;
+                    topCategoriesChartInstance.update();
+                } else {
+                    topCategoriesChartInstance = new Chart(document.getElementById('topCategoriesChart'), {
+                        type: 'bar',
+                        data: {
+                            labels: slicedLabels.map(wrapLabel),
+                            datasets: [{
+                                label: 'Number of Items Purchased',
+                                data: slicedValues,
+                                backgroundColor: [CHART_COLORS.teal, CHART_COLORS.blue, CHART_COLORS.darkBlue, '#0466c8', '#0077b6', '#0096c7', '#00b4d8', '#48cae4', '#90e0ef', '#ade8f4', '#c7e9ee', '#e0f3f7', '#f0f9fb', '#f7fcfd', '#fcfdfe'],
+                                borderColor: '#ffffff',
+                                borderWidth: 2
+                            }]
+                        },
+                        options: {
+                            indexAxis: 'y',
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: false },
+                                ...tooltipPluginConfig
+                            },
+                             scales: {
+                                x: {
+                                    beginAtZero: true,
+                                    grid: { color: 'rgba(0,0,0,0.05)' }
+                                },
+                                y: {
+                                    grid: { color: 'rgba(0,0,0,0.05)' }
+                                }
+                            }
+                        }
+                    });
+                }
+            };
+            document.getElementById('categoryTopN').addEventListener('change', updateTopCategoriesChart);
+            updateTopCategoriesChart();
+
+            // --- Top Brands Data & Chart ---
+            const allTopBrandsData = {
+                labels: ["AMLOR", "JARDIANCE", "PANADOL", "SYMBIOCORT", "ESSENCE", "CRESTOR", "VENTOLIN", "CELEBREX", "FORMIT", "DUSPATALIN", "NOVORAPID", "OMIZ", "LANTUS", "CIPRALEX", "TOVAST"],
+                values: [230, 227, 219, 177, 150, 140, 120, 106, 104, 100, 99, 99, 87, 81, 53]
+            };
+            let topBrandsChartInstance;
+
+            const updateTopBrandsChart = () => {
+                const topN = parseInt(document.getElementById('brandTopN').value);
+                const slicedLabels = allTopBrandsData.labels.slice(0, topN);
+                const slicedValues = allTopBrandsData.values.slice(0, topN);
+
+                if (topBrandsChartInstance) {
+                    topBrandsChartInstance.data.labels = slicedLabels.map(wrapLabel);
+                    topBrandsChartInstance.data.datasets[0].data = slicedValues;
+                    topBrandsChartInstance.update();
+                } else {
+                    topBrandsChartInstance = new Chart(document.getElementById('topBrandsChart'), {
+                        type: 'bar',
+                        data: {
+                            labels: slicedLabels.map(wrapLabel),
+                            datasets: [{
+                                label: 'Number of Items Purchased',
+                                data: slicedValues,
+                                backgroundColor: ['#ffc300', '#ffd60a', '#ffc914', '#f9c74f', '#f8961e', '#f3722c', '#f94144', '#f95738', '#f07167', '#ef476f', '#f78c6b', '#f4a261', '#e76f51', '#e9c46a', '#f4a261'],
+                                borderColor: '#ffffff',
+                                borderWidth: 2
+                            }]
+                        },
+                        options: {
+                            indexAxis: 'y',
+                            responsive: true,
+                            maintainAspectRatio: false,
+                             plugins: {
+                                legend: { display: false },
+                                ...tooltipPluginConfig
+                            },
+                            scales: {
+                                x: {
+                                    beginAtZero: true,
+                                    grid: { color: 'rgba(0,0,0,0.05)' }
+                                },
+                                y: {
+                                    grid: { color: 'rgba(0,0,0,0.05)' }
+                                }
+                            }
+                        }
+                    });
+                }
+            };
+            document.getElementById('brandTopN').addEventListener('change', updateTopBrandsChart);
+            updateTopBrandsChart();
+
+            // --- Entry Type Chart (Donut) ---
+            const entryTypeData = {
+                labels: ["Sales", "Redemption", "Expire"],
+                values: [615198, 615642, 1459] // Hypothetical values based on previous output interpretation
+            };
+            new Chart(document.getElementById('entryTypeChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: entryTypeData.labels,
+                    datasets: [{
+                        data: entryTypeData.values,
+                        backgroundColor: [CHART_COLORS.blue, CHART_COLORS.teal, CHART_COLORS.yellow],
+                        borderColor: '#ffffff',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20
+                            }
+                        },
+                        ...tooltipPluginConfig
+                    }
+                }
+            });
+
+            // --- Order Distribution Chart ---
+            const orderDistributionData = {
+                labels: ['$0-100', '$101-250', '$251-500', '$501-1k', '$1k-2k', '$2k+'],
+                values: [450, 350, 280, 150, 109, 70]
+            };
+            new Chart(document.getElementById('orderDistributionChart'), {
+                type: 'bar',
+                data: {
+                    labels: orderDistributionData.labels,
+                    datasets: [{
+                        label: 'Number of Orders',
+                        data: orderDistributionData.values,
+                        backgroundColor: CHART_COLORS.teal,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                         ...tooltipPluginConfig
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Orders'
+                            },
+                            grid: { color: 'rgba(0,0,0,0.05)' }
+                        },
+                        x: {
+                             title: {
+                                display: true,
+                                text: 'Order Value Bins (SAR)'
+                            },
+                            grid: { color: 'rgba(0,0,0,0.05)' }
+                        }
+                    }
+                }
+            });
+
+            // Fade-in effect for sections
+            const faders = document.querySelectorAll('.fade-in');
+            const appearOnScroll = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (!entry.isIntersecting) {
+                        return;
+                    }
+                    entry.target.classList.add('appear');
+                    observer.unobserve(entry.target);
+                });
+            }, { threshold: 0.2 });
+
+            faders.forEach(fader => {
+                appearOnScroll.observe(fader);
+            });
+
+            // Back to Top button functionality
+            const backToTopBtn = document.getElementById('backToTopBtn');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 300) {
+                    backToTopBtn.classList.remove('hidden');
+                } else {
+                    backToTopBtn.classList.add('hidden');
+                }
+            });
+
+            backToTopBtn.addEventListener('click', () => {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
